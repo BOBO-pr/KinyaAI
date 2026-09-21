@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background-color: #070c09;
+  color: #f1f5f9;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar for modern dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a130e;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1c3425;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #10B981;
+}
+
+/* Glassmorphism helpers */
+.glass-panel {
+  background: rgba(12, 22, 16, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(28, 52, 37, 0.8);
+}
+
+.glass-card {
+  background: rgba(18, 34, 24, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(34, 70, 48, 0.6);
+}
+
+.glass-card:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.08);
+}
+
+.emerald-glow {
+  box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.25);
+}
+
+.emerald-glow-sm {
+  box-shadow: 0 0 15px -3px rgba(16, 185, 129, 0.2);
+}
+
+/* Text Gradients */
+.text-gradient-emerald {
+  background: linear-gradient(135deg, #ffffff 20%, #34d399 70%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-green {
+  background: linear-gradient(135deg, #6ee7b7 0%, #10b981 50%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ==========================================================================
+   OFFICIAL CERTIFICATE PRINTING & EXPORT STYLES
+   Enforces 1-Page Landscape, Dark Emerald Theme, Gold Metallic Accents,
+   and eliminates all sidebars, headers, and UI controls.
+   ========================================================================== */
+@media print {
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  html,
+  body {
+    background-color: #051108 !important;
+    color: #f1f5f9 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+  }
+
+  /* Hide everything outside of the certificate view */
+  aside,
+  nav,
+  header,
+  footer,
+  button,
+  .print-hidden,
+  .print\:hidden,
+  [data-sidebar] {
+    display: none !important;
+  }
+
+  /* Single-page certificate canvas guarantee */
+  .kinya-certificate-sheet {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    page-break-before: avoid !important;
+    break-before: avoid !important;
+    width: 98vw !important;
+    max-width: 98vw !important;
+    height: 96vh !important;
+    max-height: 96vh !important;
+    margin: auto !important;
+    border-radius: 1.5rem !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+}
