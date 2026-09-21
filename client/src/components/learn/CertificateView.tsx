@@ -8,8 +8,11 @@ import {
   Copy,
   Check,
   Loader2,
+  Share2,
+  Linkedin,
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
+import { QRCodeSVG } from 'qrcode.react';
 import { CertificateData } from '../../types';
 import { printIsolatedCertificate } from '../../utils/printCertificate';
 
@@ -22,6 +25,8 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ certificate })
   const [copiedId, setCopiedId] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const certRef = useRef<HTMLDivElement>(null);
+
+  const verifyUrl = `${window.location.origin}/verify/${certificate.certificateId}`;
 
   const handlePrint = () => {
     if (certRef.current) {
@@ -61,6 +66,23 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ certificate })
     setTimeout(() => setCopiedId(false), 2500);
   };
 
+  const handleShareLinkedIn = () => {
+    const date = new Date(certificate.issuedAt || Date.now());
+    const issueYear = date.getFullYear();
+    const issueMonth = date.getMonth() + 1;
+    const url = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(
+      certificate.courseTitle
+    )}&organizationName=KinyaAI+Academy&issueYear=${issueYear}&issueMonth=${issueMonth}&certUrl=${encodeURIComponent(
+      verifyUrl
+    )}&certId=${encodeURIComponent(certificate.certificateId)}`;
+    window.open(url, '_blank');
+  };
+
+  const handleShareWhatsApp = () => {
+    const msg = `🎓 Natsindiye Impamyabumenyi yemewe (Official Certificate) muri KinyaAI Academy ku isomo ryitwa "${certificate.courseTitle}" n'amanota ${certificate.score}% (${certificate.grade})!\nReba ubugenzuzi hano: ${verifyUrl}`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+  };
+
   const formattedDate = new Date(certificate.issuedAt || Date.now()).toLocaleDateString('rw-RW', {
     year: 'numeric',
     month: 'long',
@@ -86,12 +108,33 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ certificate })
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {/* LinkedIn Share */}
+          <button
+            onClick={handleShareLinkedIn}
+            className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-[#0a233a] hover:bg-[#0f3456] border border-sky-500/40 text-xs font-semibold text-sky-300 transition-colors"
+            title="Add to LinkedIn Certifications"
+          >
+            <Linkedin className="w-4 h-4 text-sky-400" />
+            <span>LinkedIn</span>
+          </button>
+
+          {/* WhatsApp Share */}
+          <button
+            onClick={handleShareWhatsApp}
+            className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-[#0a2818] hover:bg-[#0e3b23] border border-emerald-500/40 text-xs font-semibold text-emerald-300 transition-colors"
+            title="Share on WhatsApp Status & Groups"
+          >
+            <Share2 className="w-4 h-4 text-emerald-400" />
+            <span>WhatsApp</span>
+          </button>
+
+          {/* Copy ID */}
           <button
             onClick={handleCopyId}
             className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-[#0f2418] hover:bg-[#143222] border border-emerald-800 text-xs font-semibold text-emerald-300 transition-colors"
           >
             {copiedId ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-            <span>{copiedId ? 'Kode Yakopiwe!' : 'Kopera Nimero (ID)'}</span>
+            <span>{copiedId ? 'Kode Yakopiwe!' : 'Kopera ID'}</span>
           </button>
 
           {/* Direct HD PNG Image Download Button */}
@@ -108,7 +151,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ certificate })
             ) : (
               <>
                 <Download className="w-4 h-4 text-emerald-400" />
-                <span>Kuramo Ifoto (Download HD PNG)</span>
+                <span>Kuramo Ifoto (HD PNG)</span>
               </>
             )}
           </button>
@@ -119,7 +162,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ certificate })
             className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-emerald-500 hover:from-amber-400 hover:to-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
           >
             <Printer className="w-4 h-4" />
-            <span>Gucapa / Kuramo PDF (Print 1-Page Certificate)</span>
+            <span>Gucapa / Kuramo PDF</span>
           </button>
         </div>
       </div>
@@ -210,7 +253,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ certificate })
             </div>
           </div>
 
-          {/* Verification & Signatures Bar */}
+          {/* Verification & Signatures Bar with Scannable QR Code */}
           <div className="pt-3 border-t border-amber-400/40 grid grid-cols-3 gap-3 items-end text-center">
             {/* Signature 1 */}
             <div className="space-y-0.5">
@@ -222,15 +265,15 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ certificate })
               </div>
             </div>
 
-            {/* Official Seal Badge */}
-            <div className="space-y-0.5 flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-amber-500/20 border-2 border-amber-400 text-amber-400 flex items-center justify-center shadow-md">
-                <ShieldCheck className="w-5 h-5" />
+            {/* Official Scannable QR Code & Serial Number */}
+            <div className="space-y-1 flex flex-col items-center">
+              <div className="p-1 rounded-lg bg-white shadow-sm flex items-center justify-center">
+                <QRCodeSVG value={verifyUrl} size={42} level="M" />
               </div>
               <div className="text-[8px] font-mono text-emerald-400 uppercase font-bold tracking-widest">
                 {certificate.certificateId}
               </div>
-              <div className="text-[8px] text-slate-400">
+              <div className="text-[7px] text-slate-400">
                 Itariki: {formattedDate}
               </div>
             </div>

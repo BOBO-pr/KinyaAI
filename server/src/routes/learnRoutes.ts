@@ -11,6 +11,7 @@ import {
   claimMasterCertificate,
   adminCreateCourse,
   getUserProgress,
+  getLeaderboard,
 } from '../controllers/learnController';
 import { authenticateJWT, optionalJWT, requireRole } from '../middleware/auth';
 
@@ -32,6 +33,9 @@ router.get('/progress', authenticateJWT, getUserProgress);
 // Master Certificate of All Subjects
 router.get('/master-certificate', authenticateJWT, getMasterCertificate);
 router.post('/master-certificate/claim', authenticateJWT, claimMasterCertificate);
+
+// Leaderboard: Top Scholars & Distinctions
+router.get('/leaderboard', optionalJWT, getLeaderboard);
 
 // Certificate Verification & Public Retrieval
 router.get('/certificate/:certificateId', getCertificateById);

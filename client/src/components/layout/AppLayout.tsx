@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { FeedbackModal } from '../common/FeedbackModal';
+import { MomoPaymentModal } from '../common/MomoPaymentModal';
 import { useAuth } from '../../context/AuthContext';
-import { Menu, X, Sparkles } from 'lucide-react';
+import { Menu, X, Sparkles, CreditCard } from 'lucide-react';
 
 export const AppLayout: React.FC = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [momoOpen, setMomoOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const location = useLocation();
 
@@ -33,7 +35,10 @@ export const AppLayout: React.FC = () => {
     <div className="min-h-screen bg-[#070c09] flex text-slate-100 print:bg-[#051108] print:block print:min-h-0 print:h-auto">
       {/* Desktop Sidebar */}
       <div className="hidden md:block print:hidden">
-        <Sidebar onFeedbackClick={() => setFeedbackOpen(true)} />
+        <Sidebar
+          onFeedbackClick={() => setFeedbackOpen(true)}
+          onPaymentClick={() => setMomoOpen(true)}
+        />
       </div>
 
       {/* Mobile Drawer Overlay */}
@@ -45,6 +50,10 @@ export const AppLayout: React.FC = () => {
               onFeedbackClick={() => {
                 setMobileNavOpen(false);
                 setFeedbackOpen(true);
+              }}
+              onPaymentClick={() => {
+                setMobileNavOpen(false);
+                setMomoOpen(true);
               }}
             />
           </div>
@@ -64,12 +73,21 @@ export const AppLayout: React.FC = () => {
           <span className="text-lg font-bold text-white">
             Kinya<span className="text-emerald-400">AI</span>
           </span>
-          <button
-            onClick={() => setFeedbackOpen(true)}
-            className="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-          >
-            Feedback
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setMomoOpen(true)}
+              className="text-xs px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold flex items-center space-x-1"
+            >
+              <CreditCard className="w-3 h-3" />
+              <span>MoMo</span>
+            </button>
+            <button
+              onClick={() => setFeedbackOpen(true)}
+              className="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+            >
+              Feedback
+            </button>
+          </div>
         </div>
 
         {/* Nested route content */}
@@ -83,6 +101,19 @@ export const AppLayout: React.FC = () => {
         isOpen={feedbackOpen}
         onClose={() => setFeedbackOpen(false)}
       />
+
+      {/* Global Rwandan Mobile Money Modal */}
+      <MomoPaymentModal
+        isOpen={momoOpen}
+        onClose={() => setMomoOpen(false)}
+        onSuccess={(tokensAdded) => {
+          if (user?.usageCount) {
+            user.usageCount.tokens = (user.usageCount.tokens || 0) + tokensAdded;
+          }
+        }}
+      />
     </div>
   );
 };
+
+export default AppLayout;

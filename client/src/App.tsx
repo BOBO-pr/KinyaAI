@@ -14,17 +14,24 @@ import { VoicePage } from './pages/VoicePage';
 import { SummarizerPage } from './pages/SummarizerPage';
 import { AdminPage } from './pages/AdminPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { PublicCertificateVerifyPage } from './pages/PublicCertificateVerifyPage';
+import { UmusiziPage } from './pages/UmusiziPage';
+import { LeaderboardPage } from './pages/LeaderboardPage';
 
 export const App: React.FC = () => {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Public Website */}
+          {/* Public Website & Auth */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
+          {/* Public Certificate Verification Portal (No login required) */}
+          <Route path="/verify/:certificateId" element={<PublicCertificateVerifyPage />} />
+          <Route path="/verify" element={<PublicCertificateVerifyPage />} />
 
           {/* Authenticated Application */}
           <Route path="/app" element={<AppLayout />}>
@@ -33,6 +40,8 @@ export const App: React.FC = () => {
             <Route path="chat" element={<ChatPage />} />
             <Route path="translate" element={<TranslatePage />} />
             <Route path="learn" element={<LearnPage />} />
+            <Route path="leaderboard" element={<LeaderboardPage />} />
+            <Route path="umusizi" element={<UmusiziPage />} />
             <Route path="voice" element={<VoicePage />} />
             <Route path="summarize" element={<SummarizerPage />} />
             <Route path="admin" element={<AdminPage />} />

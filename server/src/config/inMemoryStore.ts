@@ -84,6 +84,8 @@ class InMemoryStore {
   translations: StoredTranslation[] = [];
   progress: StoredProgress[] = [];
   feedbacks: StoredFeedback[] = [];
+  masterCertificates: any[] = [];
+  payments: any[] = [];
 
   constructor() {
     this.seedDefaults();

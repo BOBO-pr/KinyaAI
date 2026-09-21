@@ -10,8 +10,11 @@ import {
   Trophy,
   Download,
   Loader2,
+  Share2,
+  Linkedin,
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
+import { QRCodeSVG } from 'qrcode.react';
 import { MasterCertificateData } from '../../types';
 import { printIsolatedCertificate } from '../../utils/printCertificate';
 
@@ -24,6 +27,8 @@ export const MasterCertificateView: React.FC<MasterCertificateViewProps> = ({ ma
   const [copiedId, setCopiedId] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const certRef = useRef<HTMLDivElement>(null);
+
+  const verifyUrl = `${window.location.origin}/verify/${masterCertificate.certificateId}`;
 
   const handlePrint = () => {
     if (certRef.current) {
@@ -42,7 +47,7 @@ export const MasterCertificateView: React.FC<MasterCertificateViewProps> = ({ ma
       setIsDownloading(true);
       const dataUrl = await toPng(certRef.current, {
         quality: 1,
-        pixelRatio: 2.5, // 2.5x resolution for crisp, professional HD image
+        pixelRatio: 2.5, // 2.5x crisp HD
         backgroundColor: '#051108',
         cacheBust: true,
       });
@@ -61,6 +66,23 @@ export const MasterCertificateView: React.FC<MasterCertificateViewProps> = ({ ma
     navigator.clipboard.writeText(masterCertificate.certificateId);
     setCopiedId(true);
     setTimeout(() => setCopiedId(false), 2500);
+  };
+
+  const handleShareLinkedIn = () => {
+    const date = new Date(masterCertificate.issuedAt || Date.now());
+    const issueYear = date.getFullYear();
+    const issueMonth = date.getMonth() + 1;
+    const url = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(
+      "Grand Master Diploma of All Subjects (KinyaAI Academy)"
+    )}&organizationName=KinyaAI+Academy&issueYear=${issueYear}&issueMonth=${issueMonth}&certUrl=${encodeURIComponent(
+      verifyUrl
+    )}&certId=${encodeURIComponent(masterCertificate.certificateId)}`;
+    window.open(url, '_blank');
+  };
+
+  const handleShareWhatsApp = () => {
+    const msg = `👑 Nahawe Impamyabumenyi y'Ikirenga mu Masomo Yose (Grand Master Diploma) muri KinyaAI Academy n'impuzandengo ya ${masterCertificate.averageScore}% (${masterCertificate.grade})!\nReba ubugenzuzi hano: ${verifyUrl}`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
   const formattedDate = new Date(masterCertificate.issuedAt || Date.now()).toLocaleDateString('rw-RW', {
@@ -93,20 +115,41 @@ export const MasterCertificateView: React.FC<MasterCertificateViewProps> = ({ ma
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* LinkedIn Share */}
+          <button
+            onClick={handleShareLinkedIn}
+            className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-[#0a233a] hover:bg-[#0f3456] border border-sky-500/40 text-xs font-semibold text-sky-300 transition-colors"
+            title="Add to LinkedIn Certifications"
+          >
+            <Linkedin className="w-4 h-4 text-sky-400" />
+            <span>LinkedIn</span>
+          </button>
+
+          {/* WhatsApp Share */}
+          <button
+            onClick={handleShareWhatsApp}
+            className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-[#0a2818] hover:bg-[#0e3b23] border border-emerald-500/40 text-xs font-semibold text-emerald-300 transition-colors"
+            title="Share on WhatsApp Status & Groups"
+          >
+            <Share2 className="w-4 h-4 text-emerald-400" />
+            <span>WhatsApp</span>
+          </button>
+
+          {/* Copy Master ID */}
           <button
             onClick={handleCopyId}
-            className="flex items-center space-x-1.5 px-3.5 py-2.5 rounded-xl bg-[#0a180e] hover:bg-[#0f2416] border border-amber-500/30 text-xs font-semibold text-amber-300 transition-colors"
+            className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-[#0a180e] hover:bg-[#0f2416] border border-amber-500/30 text-xs font-semibold text-amber-300 transition-colors"
           >
             {copiedId ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-            <span>{copiedId ? 'Kode Yakopiwe!' : 'Kopera Kode (Master ID)'}</span>
+            <span>{copiedId ? 'Kode Yakopiwe!' : 'Kopera ID'}</span>
           </button>
 
           {/* Direct HD PNG Image Download Button */}
           <button
             onClick={handleDownloadImage}
             disabled={isDownloading}
-            className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-[#0f2818] hover:bg-[#163a23] border border-emerald-500/50 text-emerald-300 font-bold text-xs shadow-lg shadow-emerald-950/40 transition-all cursor-pointer disabled:opacity-50"
+            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-[#0f2818] hover:bg-[#163a23] border border-emerald-500/50 text-emerald-300 font-bold text-xs shadow-lg shadow-emerald-950/40 transition-all cursor-pointer disabled:opacity-50"
           >
             {isDownloading ? (
               <>
@@ -116,7 +159,7 @@ export const MasterCertificateView: React.FC<MasterCertificateViewProps> = ({ ma
             ) : (
               <>
                 <Download className="w-4 h-4 text-emerald-400" />
-                <span>Kuramo Ifoto (Download HD PNG)</span>
+                <span>Kuramo Ifoto (HD PNG)</span>
               </>
             )}
           </button>
@@ -124,10 +167,10 @@ export const MasterCertificateView: React.FC<MasterCertificateViewProps> = ({ ma
           {/* 1-Page Landscape Print / PDF Button */}
           <button
             onClick={handlePrint}
-            className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-400 hover:brightness-110 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/25 transition-all cursor-pointer"
+            className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-400 hover:brightness-110 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/25 transition-all cursor-pointer"
           >
             <Printer className="w-4 h-4" />
-            <span>Gucapa / Kuramo PDF (Print 1-Page Master Diploma)</span>
+            <span>Gucapa / Kuramo PDF</span>
           </button>
         </div>
       </div>
@@ -238,7 +281,7 @@ export const MasterCertificateView: React.FC<MasterCertificateViewProps> = ({ ma
             </div>
           </div>
 
-          {/* Institutional Signatures & Master Verification Bar */}
+          {/* Institutional Signatures & Master Verification Bar with Scannable QR Code */}
           <div className="pt-3 border-t border-amber-400/40 grid grid-cols-3 gap-2 items-end text-center">
             {/* Signature 1 */}
             <div className="space-y-0.5">
@@ -250,10 +293,10 @@ export const MasterCertificateView: React.FC<MasterCertificateViewProps> = ({ ma
               </div>
             </div>
 
-            {/* Grand Master Seal & Serial Number */}
-            <div className="space-y-0.5 flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 border-2 border-amber-200 text-slate-950 flex items-center justify-center shadow-lg font-black text-xs">
-                <ShieldCheck className="w-5 h-5 text-slate-950" />
+            {/* Official Scannable QR Code & Serial Number */}
+            <div className="space-y-1 flex flex-col items-center">
+              <div className="p-1 rounded-lg bg-white shadow-sm flex items-center justify-center">
+                <QRCodeSVG value={verifyUrl} size={42} level="M" />
               </div>
               <div className="text-[8px] font-mono text-amber-300 uppercase font-black tracking-widest">
                 {masterCertificate.certificateId}

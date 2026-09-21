@@ -14,6 +14,8 @@ import learnRoutes from './routes/learnRoutes';
 import documentRoutes from './routes/documentRoutes';
 import dashboardRoutes from './routes/dashboardRoutes';
 import adminRoutes from './routes/adminRoutes';
+import paymentRoutes from './routes/paymentRoutes';
+import cultureRoutes from './routes/cultureRoutes';
 
 dotenv.config();
 
@@ -53,6 +55,8 @@ app.use('/api/learn', learnRoutes);
 app.use('/api/document', documentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/payment', paymentRoutes);
+app.use('/api/culture', cultureRoutes);
 
 // Centralized error handling
 app.use(errorHandler);

@@ -108,3 +108,49 @@ const ProgressSchema = new Schema(
 );
 
 export const ProgressModel = mongoose.model<any>('Progress', ProgressSchema);
+
+export interface IMasterCertificate {
+  _id?: any;
+  certificateId: string;
+  userId: any;
+  studentRealName: string;
+  subjects: Array<{
+    slug: string;
+    titleKinya: string;
+    titleEn: string;
+    category: string;
+    score: number;
+    certificateId: string;
+    completedAt: string;
+  }>;
+  totalSubjects: number;
+  averageScore: number;
+  grade: string;
+  issuedAt: Date;
+}
+
+const MasterCertificateSchema = new Schema(
+  {
+    certificateId: { type: String, required: true, unique: true, index: true },
+    userId: { type: Schema.Types.Mixed, required: true, index: true },
+    studentRealName: { type: String, required: true },
+    subjects: [
+      {
+        slug: String,
+        titleKinya: String,
+        titleEn: String,
+        category: String,
+        score: Number,
+        certificateId: String,
+        completedAt: String,
+      },
+    ],
+    totalSubjects: { type: Number, required: true },
+    averageScore: { type: Number, required: true },
+    grade: { type: String, required: true },
+    issuedAt: { type: Date, default: Date.now },
+  },
+  { timestamps: true }
+);
+
+export const MasterCertificateModel = mongoose.model<any>('MasterCertificate', MasterCertificateSchema);
