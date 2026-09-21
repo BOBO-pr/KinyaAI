@@ -3,6 +3,7 @@ import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { FeedbackModal } from '../common/FeedbackModal';
 import { MomoPaymentModal } from '../common/MomoPaymentModal';
+import { PwaInstallPrompt } from '../common/PwaInstallPrompt';
 import { useAuth } from '../../context/AuthContext';
 import { Menu, X, Sparkles, CreditCard } from 'lucide-react';
 
@@ -88,6 +89,11 @@ export const AppLayout: React.FC = () => {
               Feedback
             </button>
           </div>
+        </div>
+
+        {/* PWA Mobile App Installation Prompt */}
+        <div className="px-4 pt-3 print:hidden">
+          <PwaInstallPrompt />
         </div>
 
         {/* Nested route content */}
